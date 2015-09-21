@@ -1,0 +1,58 @@
+{
+    "appKeys": {},
+    "capabilities": [
+        "configurable"
+    ],
+    "companyName": "Mendeley",
+    "longName": "Mendeley",
+    "projectType": "pebblejs",
+    "resources": {
+        "media": [
+            {
+                "file": "images/menu_icon.png",
+                "name": "IMAGE_MENU_ICON",
+                "type": "png"
+            },
+            {
+                "file": "images/logo_splash.png",
+                "name": "IMAGE_LOGO_SPLASH",
+                "type": "png"
+            },
+            {
+                "file": "images/tile_splash.png",
+                "name": "IMAGE_TILE_SPLASH",
+                "type": "png"
+            },
+            {
+                "file": "fonts/UbuntuMono-Regular.ttf",
+                "name": "MONO_FONT_14",
+                "type": "font"
+            },
+            {
+                "file": "images/start.png",
+                "name": "IMAGES_START_PNG",
+                "type": "png"
+            },
+            {
+                "file": "images/loading.png",
+                "name": "IMAGES_LOADING_PNG",
+                "type": "png"
+            },
+            {
+                "file": "images/menu-image.png",
+                "menuIcon": true,
+                "name": "IMAGES_MENU_IMAGE_PNG",
+                "type": "png"
+            }
+        ]
+    },
+    "sdkVersion": "3",
+    "shortName": "Mendeley",
+    "uuid": "0380130b-0282-4aa0-a365-150950889a83",
+    "versionCode": 1,
+    "versionLabel": "1.0",
+    "watchapp": {
+        "hiddenApp": false,
+        "watchface": false
+    }
+}
