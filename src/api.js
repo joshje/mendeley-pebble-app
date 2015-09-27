@@ -2,6 +2,8 @@ var Settings = require('settings');
 var ajax = require('ajax');
 var config = require('./config');
 
+var documents;
+
 var get = function(opts, callback, errorCallback) {
   var auth = JSON.parse(Settings.option('auth'));
 
@@ -48,6 +50,17 @@ var getAnnotations = function(id, callback, errorCallback) {
 
 module.exports = {
   get: get,
-  getDocuments: getDocuments,
+  getDocuments: function(callback, errorCallback) {
+    var documents = Settings.data('documents');
+    if (documents) {
+      console.log('got documents from cache');
+      callback(documents);
+    }
+    getDocuments(function(documents) {
+      Settings.data('documents', documents);
+      console.log('got documents from api');
+      callback(documents);
+    }, errorCallback);
+  },
   getAnnotations: getAnnotations
 };

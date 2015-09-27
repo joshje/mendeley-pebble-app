@@ -16,13 +16,13 @@ views.documents.on('select', function(e) {
 views.document.on('click', 'select', function() {
   api.getAnnotations(current_document.id, function(data) {
     var annotations = [];
-    data.forEach(function(annotation) {
-      if (annotation.text) {
+    for (var i = data.length - 1; i >= 0; i--) {
+      if (data[i].text) {
         annotations.push({
-          title: annotation.text
+          title: data[i].text
         });
       }
-    });
+    }
 
     if (annotations.length) {
       views.annotations.section(0, {

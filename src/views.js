@@ -69,8 +69,7 @@ var annotationsView = new UI.Menu({
 });
 
 var annotationView = new UI.Card({
-  scrollable: true,
-  style: 'large'
+  scrollable: true
 });
 
 module.exports = {
