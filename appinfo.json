@@ -10,6 +10,7 @@
         "media": [
             {
                 "file": "images/menu_icon.png",
+                "menuIcon": true,
                 "name": "IMAGE_MENU_ICON",
                 "type": "png"
             },
@@ -36,12 +37,6 @@
             {
                 "file": "images/loading.png",
                 "name": "IMAGES_LOADING_PNG",
-                "type": "png"
-            },
-            {
-                "file": "images/menu-image.png",
-                "menuIcon": true,
-                "name": "IMAGES_MENU_IMAGE_PNG",
                 "type": "png"
             }
         ]

@@ -1,94 +1,20 @@
-
-var UI = require('ui');
-var Vector2 = require('vector2');
 var Settings = require('settings');
+var config = require('./config');
 var api = require('./api');
+var views = require('./views');
 
-var documents, document;
+var documents, current_document;
 
-var startView = new UI.Window({ fullscreen: true });
-var startImage = new UI.Image({
-  position: new Vector2(0, 0),
-  size: new Vector2(144, 168),
-  image: 'images/start.png'
-});
-startView.add(startImage);
+views.documents.on('select', function(e) {
+  current_document = e.item;
 
-var loadingView = new UI.Window({ fullscreen: true });
-var loadingImage = new UI.Image({
-  position: new Vector2(0, 0),
-  size: new Vector2(144, 168),
-  image: 'images/loading.png'
-});
-loadingView.add(loadingImage);
+  views.document.renderDocument(current_document);
 
-var documentsView = new UI.Menu({
-  backgroundColor: 'white',
-  textColor: 'black',
-  highlightBackgroundColor: 'darkCandyAppleRed',
-  highlightTextColor: 'white',
-  sections: []
+  views.document.show();
 });
 
-var documentView = new UI.Card({
-  scrollable: true
-});
-
-var annotationsView = new UI.Menu({
-  backgroundColor: 'white',
-  textColor: 'black',
-  highlightBackgroundColor: 'darkCandyAppleRed',
-  highlightTextColor: 'white',
-  sections: []
-});
-
-var annotationView = new UI.Card({
-  scrollable: true,
-  style: 'large'
-});
-
-documentsView.on('select', function(e) {
-  document = e.item;
-  
-  var title = document.title;
-  if (document.year) {
-    title += ' (' + document.year + ')';
-  }
-  
-  var metadata = [];
-  if (document.authors) {
-    var authors = [];
-    document.authors.forEach(function(author) {
-      authors.push(author.first_name + ' ' + author.last_name);
-    });
-    metadata.push(authors.join(', '));
-  }
-  
-  if (document.identifiers) {
-    var identifiers = [];
-    for (var identifier in document.identifiers) {
-      identifiers.push(identifier + ': ' + document.identifiers[identifier]);
-    }
-    metadata.push(identifiers.join("\n"));
-  }
-  
-  if (document.abstract) {
-    metadata.push(document.abstract);
-  }
-  
-  documentView.subtitle(title);
-  documentView.body(metadata.join("\n\n"));
-  
-  documentView.show();
-});
-
-documentView.on('click', 'select', function() {  
-  api.get({
-    url: 'https://api.mendeley.com:443/annotations?document_id=' + document.id,
-    headers: {
-      'Accept': 'application/vnd.mendeley-annotation.1+json'
-    }
-  }, function(data, status, request) {
+views.document.on('click', 'select', function() {
+  api.getAnnotations(current_document.id, function(data) {
     var annotations = [];
     data.forEach(function(annotation) {
       if (annotation.text) {
@@ -97,60 +23,50 @@ documentView.on('click', 'select', function() {
         });
       }
     });
-    
+
     if (annotations.length) {
-      annotationsView.section(0, {
+      views.annotations.section(0, {
         title: 'Annotations',
         items: annotations
       });
 
-      annotationsView.show();
+      views.annotations.show();
     }
-  }, function(error, status, request) {
-    startView.show();
-    loadingView.hide();
+  }, function() {
+    views.start.show();
+    views.loading.hide();
   });
 });
 
-annotationsView.on('select', function(e) {  
-  annotationView.body(e.item.title);
-  annotationView.show();
+views.annotations.on('select', function(e) {
+  views.annotation.body(e.item.title);
+  views.annotation.show();
 });
 
-var getDocuments = function() {    
-  loadingView.show();
-  startView.hide();
-  documentView.hide();
-  
-  api.get(
-  {
-    url: 'https://api.mendeley.com/documents',
-    headers: {
-      'Accept': 'application/vnd.mendeley-document.1+json'
-    }
-  },
-  function(data, status, request) {
+var getDocuments = function() {
+  views.loading.show();
+  views.start.hide();
+  views.document.hide();
+
+  api.getDocuments(function(data) {
     documents = data;
-    
-    documentsView.section(0, {
+
+    views.documents.section(0, {
       title: 'Documents',
       items: documents
     });
-    
-    documentsView.show();
-    loadingView.hide();
-  },
-  function(error, status, request) {
-    startView.show();
-    loadingView.hide();
-  }
-  );
-  
+
+    views.documents.show();
+    views.loading.hide();
+  }, function() {
+    views.start.show();
+    views.loading.hide();
+  });
 };
 
 Settings.config(
-  { url: 'https://mendeley-pebble.herokuapp.com/auth' },
-  function(e) {
+  { url: config.authUrl },
+  function() {
     var auth = JSON.parse(Settings.option('auth'));
 
     var expiresAt = Date.now() + (auth.exires_in * 1000);
@@ -160,7 +76,7 @@ Settings.config(
 );
 
 if (! Settings.option('auth')) {
-  startView.show();
+  views.start.show();
 } else {
   getDocuments();
 }
